@@ -1,0 +1,19 @@
+---
+# defaults file for tomcat
+java: java-1.8.0-openjdk.x86_64
+url: http://apachemirror.wuchna.com/tomcat/tomcat-8/v8.5.43/bin/apache-tomcat-8.5.43.tar.gz
+url_path: /tmp
+dest_path: /opt
+apache.tar.gz: apache-tomcat-8.5.43.tar.gz
+apache_tomcat: apache-tomcat-8.5.43
+tomcat_admin_user: admin
+tomcat_admin_passwd: admin
+tomcat_manager_user: test
+tomcat_manager_passwd: test
+user: tomcat
+group: tomcat 
+tomcat_user_home: /opt/tomcat8
+tomcat_unit_service: /etc/systemd/system/tomcat.service
+tomcat_users.xml_files: /opt/tomcat8/conf/tomcat-users.xml
+tomcat_managers_context.xml_file: /opt/tomcat8/webapps/manager/META-INF/context.xml
+tomacat_host_manager_context.xml: /opt/tomcat8/webapps/host-manager/META-INF/context.xml

@@ -1,0 +1,58 @@
+---
+# tasks file for tomcat
+
+- package: name=default-jdk state=latest
+  #shell: apt install default-jdk -y
+  when: ansible_os_family == 'ubuntu'
+
+- name: Install jdk for linux
+  package: name={{ java }} state=latest
+  when: ansible_os_family == 'RedHat'
+  # define java_home path in .bashrc 
+
+- name: Donwload tomcat8
+  get_url: url={{ url }} dest={{ url_path }}
+
+- name: unpack the tomcat pkg
+  unarchive: src={{ url_path }}/{{ apache.tar.gz }} dest={{ dest_path }} remote_src=yes
+
+- name: change name
+  command: mv {{ dest_path }}/{{ apache_tomcat }} {{ dest_path }}/tomcat8
+
+- name: create tomcat group
+  group: name={{ group }} state=present
+
+- name: create tomcat user
+  user: name={{ user }} group={{ group }} shell=/bin/false home={{ tomcat_user_home }} system=yes
+
+- name: changge owner and group owner
+  file: path={{ tomcat_user_home }} owner=tomcat group=tomcat recurse=yes
+
+- name: create systemd unit file
+  copy: src=tomcat.service dest={{ tomcat_unit_service }}
+  # set a permission for ansible control node  /etc/ansible/roles/tomcat/files
+
+- name: Daemon-reload
+  shell: systemctl daemon-reload  
+
+- name: start,status
+  service: name=tomcat state=started
+
+- name: create admin and manger users 
+  template: src=tomcat-users.xml.j2 dest={{ tomcat-users.xml_file }}  
+
+- name: change context.xml file
+  template: src=manager/context.xml.j2  dest={{ tomcat_managers_context.xml_file }}
+
+- name: change host-manaer context.xml file
+  template: src=host-manager/context.xml.j2  dest={{ tomcat_host_manager_context.xml }}
+
+- name: restart tomcat 
+  service: name=tomcat state=restarted  
+
+- name: status tomcat
+  service: name=tomcat state=status
+  reister: tomcat.status
+
+- name: output
+  debug: tomcat.status.stdout 
